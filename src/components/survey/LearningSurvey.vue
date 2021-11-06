@@ -59,7 +59,6 @@ export default {
       invalidInput: false,
     };
   },
-  // emits: ['survey-submit'],
   methods: {
     submitSurvey() {
       if (this.enteredName === '' || !this.chosenRating) {
@@ -68,10 +67,6 @@ export default {
       }
       this.invalidInput = false;
 
-      // this.$emit('survey-submit', {
-      //   userName: this.enteredName,
-      //   rating: this.chosenRating,
-      // });
       axios.post(
         'https://experienceapp-d5b25-default-rtdb.firebaseio.com/surveys.json',
         {
