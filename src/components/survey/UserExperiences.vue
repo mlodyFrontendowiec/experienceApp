@@ -8,10 +8,11 @@
         >
       </div>
       <p v-if="isLoading">Loading...</p>
+      <p v-else-if="!isLoading && error">{{ error }}</p>
       <p v-else-if="!isLoading && (!results || results.length === 0)">
         No stored experiences found. Start adding some survey results first.
       </p>
-      <ul v-else-if="!isLoading && results && results.length > 0">
+      <ul v-else>
         <survey-result
           v-for="result in results"
           :key="result.id"
@@ -32,6 +33,7 @@ export default {
     return {
       results: [],
       isLoading: false,
+      error: null,
     };
   },
 
@@ -44,6 +46,7 @@ export default {
   methods: {
     loadExperiences() {
       this.isLoading = true;
+      this.error = null;
       axios
         .get(
           'https://experienceapp-d5b25-default-rtdb.firebaseio.com/surveys.json'
@@ -60,10 +63,10 @@ export default {
           }
           this.results = results;
         })
-        .catch((err) => console.log(err));
-    },
-    showSurveys() {
-      console.log(this.surveys);
+        .catch(() => {
+          this.isLoading = false;
+          this.error = 'Failed to fetch data - please try again';
+        });
     },
   },
 };
