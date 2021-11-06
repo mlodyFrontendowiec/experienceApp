@@ -7,7 +7,11 @@
           >Load Submitted Experiences</base-button
         >
       </div>
-      <ul>
+      <p v-if="isLoading">Loading...</p>
+      <p v-else-if="!isLoading && (!results || results.length === 0)">
+        No stored experiences found. Start adding some survey results first.
+      </p>
+      <ul v-else-if="!isLoading && results && results.length > 0">
         <survey-result
           v-for="result in results"
           :key="result.id"
@@ -27,19 +31,25 @@ export default {
   data() {
     return {
       results: [],
+      isLoading: false,
     };
   },
 
   components: {
     SurveyResult,
   },
+  mounted() {
+    this.loadExperiences();
+  },
   methods: {
     loadExperiences() {
+      this.isLoading = true;
       axios
         .get(
           'https://experienceapp-d5b25-default-rtdb.firebaseio.com/surveys.json'
         )
         .then((res) => {
+          this.isLoading = false;
           const results = [];
           for (const id in res.data) {
             results.push({
@@ -49,7 +59,8 @@ export default {
             });
           }
           this.results = results;
-        });
+        })
+        .catch((err) => console.log(err));
     },
     showSurveys() {
       console.log(this.surveys);
